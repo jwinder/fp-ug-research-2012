@@ -1,0 +1,221 @@
+
+Changes needed to run craft2e files in helium
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SJT      28/1/03 - 8/4/03
+
+Summary
+^^^^^^^
+1. Need to tidy up operator section syntax, using @ for an arbitrary
+operator
+	original	(v @)		(@ v)
+	Helium		((@) v)		(flip (@) v)
+Note that the flip can be omitted in cases where the operator @ is
+commutative.
+
+2. No hiding on import; when writing duplicate definitions need to make
+them primed, as in map' etc.
+
+3. No orderings on other than integers (<) and floats (<.). Therefore
+need to use ordChar etc.
+
+4. Can't use enumerations over anything other than Int.
+
+5. Need to replace various examples of equality:
+	[Int]	use eqList (==)
+	String	use eqString
+and the inequality a/=b over (String,String) becomes:
+	not (eqTuple2 eqString eqString a b)
+
+6. Replace * over Float with *. and so forth.
+
+7. Replace use of Eq a with explicit parameter of type a -> a -> Bool
+
+8. To replace \\ define a difference and subtract function which take
+explicit eq arguments, too
+
+9. It appears that cannot import from a module in another directory ...
+
+10. Will not run .lhs files
+
+11. readFile and writeFile not defined.
+
+12. Have to give a module declaration for each file
+
+13. Have to replace toEnum (with range Char) by chr
+
+
+FirstScript.hs:
+^^^^^^^^^^^^^^^
+need to add an explicit module declaration
+
+Pictures.hs:
+^^^^^^^^^^^^
+(++"\n") becomes (flip (++) "\n")
+== over Char replaced by `eqChar`
+
+Chapter1.hs:
+^^^^^^^^^^^^
+remove hiding (rotate) and instead comment out the definition
+
+Chapter2.hs:
+^^^^^^^^^^^^
+OK
+
+Chapter3.hs:
+^^^^^^^^^^^^
+omit the import with hiding
+rename max to max2
+rename toUpper, isDigit to toUpper', isDigit'
+no lesseq on Char: either use `<= on ord' or 
+ordChar :: Char -> Char -> Ordering
+
+Chapter4.hs:
+^^^^^^^^^^^^
+OK
+
+Chapter5.hs:
+^^^^^^^^^^^^
+remove import ... hiding ... and replace id with id'
+can't use enumerations over anything other than Int ruling out
+  [0.0,0.3 .. 1.0]  ['a' .. 'f']  ['a','c' .. 'n'] etc.
+various examples of equality have to be replaced
+	[Int]	use eqList (==)
+	String	use eqString
+and the inequality a/=b over (String,String) is given by
+	not (eqTuple2 eqString eqString a b)
+
+Chapter6.hs:
+^^^^^^^^^^^^
+`eqChar` replaces == over Char
+
+Chapter7.hs:
+^^^^^^^^^^^^
+All redefined Prelude functions have a prime added, as in head'
+Need also to change the *uses* of these functions
+Have to add definitions of digits, isEven and
+elemChar :: Char -> String -> Bool
+
+Chapter8.hs:
+^^^^^^^^^^^^
+remove the import and prime the names of redefined Prelude functions
+
+Chapter9.hs:
+^^^^^^^^^^^^
+Add the type Picture = [String] definition
+Prime the (re-)definitions of Prelude functions
+Repeat definitions of elemChar, ins, whitespace
+Replace == over [Int] by eqList (==) ... leads to interesting
+error when (iSort xs) has the parentheses omitted.
+
+Chapter10.hs:
+^^^^^^^^^^^^^
+don't import Pictures; instead include the definition of the Picture type.
+don't hide Prelude functions; instead define primed versions
+Explicitly include splitWords and friends from Chapter7.hs
+change notation for operator sections: (>2) becomes (flip (>) 2) etc.
+also applies to partially applied  diy infix functions, as in ((`mod`) 2)
+replace member with memberChar, defined as (flip elemChar)
+replace == and < on String by eqString and ordString (followed by pattern match)
+
+Chapter11.hs:
+^^^^^^^^^^^^^
+replace == over String and Char by eqString and eqChar
+
+Chapter12.hs:
+^^^^^^^^^^^^^
+Not worth trying to change, as Helium doesn't support type classes,
+and that's the point of this Chapter!
+Could replace with a discussion of 
+	- how to create the equality function over a number of examples:
+	  these mirror the instance declarations for the Eq class, with
+	  parameter functions passed explicitly
+	- how to replace definitions which use type classes with
+	  definitions which pass the dictionary (e.g. the equality
+ 	  function) explictly
+
+Chapter13.hs:
+^^^^^^^^^^^^^
+replace the range ['a' .. y] by the 2 element list ['a',y]
+give versions of member and merge on lists which take explicit
+  equality and ordering (functional) parameters
+
+Chapter14_1.hs:
+^^^^^^^^^^^^^^^
+replace the temp instance of Eq with the definintion of eqTemp
+replace show over Int by showInt
+replace * over Float with *.
+
+Chapter14_2.hs:
+^^^^^^^^^^^^^^^
+replace use of Eq a with explicit parameter of type a -> a -> Bool
+get rid of all deriving clauses
+replace (/=Copy) by notCopy defined by pattern matching
+clean up operator section syntax (can omit flip for commutative operators)
+have to comment out data List a = ... because it gives rise to
+  an automatic definition of showList which clashes with the
+  predefined one
+replace == over Char with eqChar
+
+Chapter17.hs:
+^^^^^^^^^^^^^
+include iSort, specialised to [Int], from Chapter 19
+to replace \\ define a difference and subtract function which take
+explicit eq arguments, too
+It appears that cannot import from a module in another directory ...
+also the Set implementation uses type classes heavily.
+Comment out the import of Set and Relation, plus the code that uses them.  
+Set will require wholesale rewrite.
+Change type Double to Float
+replace + by +. over Float, and define sumFloat to act as sum over Float.
+ditto for > and * i.e. replace by >. and *.
+
+Chapter18.hs:
+^^^^^^^^^^^^^
+no definition of isEOF (or related?)
+replace read over Int by readInt
+replace == and /= over String
+replace use of print over Int by putStr.showInt
+
+Chapter19.hs:
+^^^^^^^^^^^^^
+make Eq a => ... into functions over Int
+Comment out import and give new definition of map'
+change the syntax of operator sections
+
+Chapter20.hs:
+^^^^^^^^^^^^^
+No changes.
+
+Pictures.hs:
+^^^^^^^^^^^^
+(++"\n") becomes (flip (++) "\n")
+== over Char replaced by `eqChar`
+
+FileIndex.hs:
+^^^^^^^^^^^^^
+readFile and writeFile not defined.
+
+ImprovePictures.hs:
+^^^^^^^^^^^^^^^^^^^
+Have to give a module declaration
+replace toEnum (with range Char) by chr
+
+Index.hs:
+^^^^^^^^^
+introduce explicit definition of elem over Char
+replace == and < on String by eqString and ordString (followed by pattern match)
+replace /= on String by not.eqString
+
+Still to examine:
+^^^^^^^^^^^^^^^^^
+
+AbsTypes
+Calculator
+Huffman
+IO
+Parsing
+Simulation
+
+
+
+
